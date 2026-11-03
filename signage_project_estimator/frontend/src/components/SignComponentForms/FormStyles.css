@@ -1,0 +1,32 @@
+label {
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+/* shared look for both input types */
+input[type="number"],
+input[type="text"] {
+    padding: 0.25rem 0.5rem;
+    margin-left: 0.5rem;
+    border-width: 0.0625rem;
+    border-style: solid;
+    border-color: #d1d5db;   /* light gray (Tailwind gray-300) */
+    border-radius: 0.375rem;
+}
+
+/* number-specific */
+input[type="number"] {
+    width: 4rem;
+    text-align: right;
+}
+
+/* text-specific */
+input[type="text"] {
+    width: 12rem;
+    text-align: right;
+}
+
+label.inches::after {
+    content: " in";
+    color: #9ca3af;   /* light gray (Tailwind gray-400) */
+}

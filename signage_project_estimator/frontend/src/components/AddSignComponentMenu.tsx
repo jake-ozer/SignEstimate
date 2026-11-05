@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { SignComponentData } from "../types/signComponent";
 import SignComponent from "./SignComponent.tsx";
 
 const COMPONENT_TYPES = [
@@ -8,7 +9,11 @@ const COMPONENT_TYPES = [
     "Large-Format Decal",
 ];
 
-export default function AddSignComponentMenu() {
+type AddSignComponentMenuProps = {
+    onAdd: (data: SignComponentData) => void;
+};
+
+export default function AddSignComponentMenu({ onAdd }: AddSignComponentMenuProps) {
     const [open, setOpen] = useState(false);
     const [activeType, setActiveType] = useState<string | null>(null);
     const ref = useRef<HTMLDivElement>(null);
@@ -19,6 +24,11 @@ export default function AddSignComponentMenu() {
         console.log('user picked: '+type);
         setActiveType(type);
         setOpen(false);
+    }
+
+    function handleSubmit(data: SignComponentData) {
+        onAdd(data);
+        setActiveType(null);
     }
 
     useEffect(() => {
@@ -62,6 +72,7 @@ export default function AddSignComponentMenu() {
                 <SignComponent
                     type={activeType}
                     onDone={() => setActiveType(null)}
+                    onSubmit={handleSubmit}
                 />
             )}
         </div>

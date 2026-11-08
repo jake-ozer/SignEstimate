@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { BaseSignData } from "../../types/signComponent";
 import "./FormStyles.css";
+import { unitLabel } from "../../utils/unitLabels.ts";
 
 type BaseSignFormProps = {
     onSubmit: (data: BaseSignData) => void;
@@ -9,13 +10,16 @@ type BaseSignFormProps = {
 type MaterialOption = {
     id: number;
     name: string;
+    category: string;
+    depth_mm: string; // numeric columns arrive as strings from pg
 };
 
 export default function BaseSignForm({ onSubmit }: BaseSignFormProps) {
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
-    const [material, setMaterial] = useState("");
     const [materials, setMaterials] = useState<MaterialOption[]>([]);
+    const [category, setCategory] = useState("");
+    const [materialId, setMaterialId] = useState("");
     const [loadError, setLoadError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -28,24 +32,49 @@ export default function BaseSignForm({ onSubmit }: BaseSignFormProps) {
             .catch((err) => setLoadError(err.message));
     }, []);
 
+    // Unique categories, in the order the server sorted them
+    const categories = [...new Set(materials.map((m) => m.category))];
+
+    // Rows in the chosen category (already sorted by depth)
+    const depthOptions = materials.filter((m) => m.category === category);
+
+    function handleCategoryChange(value: string) {
+        setCategory(value);
+        setMaterialId(""); // clear the old depth choice
+    }
+
     function handleSubmit() {
-        onSubmit({ type: "Base", width, height, material });
+        const selected = materials.find((m) => String(m.id) === materialId);
+        onSubmit({ type: "Base", width, height, material: selected?.name ?? "" });
     }
 
     return (
         <>
             <label className="inches">Width <input type="number" placeholder="0" value={width} onChange={(e) => setWidth(Number(e.target.value))} /></label>
             <label className="inches">Height <input type="number" placeholder="0" value={height} onChange={(e) => setHeight(Number(e.target.value))} /></label>
+
             <label>Material
-                <select value={material} onChange={(e) => setMaterial(e.target.value)}>
+                <select value={category} onChange={(e) => handleCategoryChange(e.target.value)}>
                     <option value="">Select...</option>
-                    {materials.map((m) => (
-                        <option key={m.id} value={m.name}>{m.name}</option>
+                    {categories.map((c) => (
+                        <option key={c} value={c}>{c}</option>
                     ))}
                 </select>
             </label>
+
+            {category && (
+                <label>Depth
+                    <select value={materialId} onChange={(e) => setMaterialId(e.target.value)}>
+                        <option value="">Select...</option>
+                        {depthOptions.map((m) => (
+                            <option key={m.id} value={m.id}>{unitLabel(m.depth_mm)}</option>
+                        ))}
+                    </select>
+                </label>
+            )}
+
             {loadError && <p className="text-red-600">Couldn't load materials: {loadError}</p>}
-            <button type="button" onClick={handleSubmit} className="mt-4 px-4 py-2 rounded border border-gray-300 hover:bg-gray-100">Submit</button>
+            <button type="button" onClick={handleSubmit} disabled={!materialId} className="mt-4 px-4 py-2 rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50">Submit</button>
         </>
     );
 }

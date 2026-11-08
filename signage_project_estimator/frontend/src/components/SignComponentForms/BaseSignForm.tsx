@@ -17,6 +17,7 @@ type MaterialOption = {
 export default function BaseSignForm({ onSubmit }: BaseSignFormProps) {
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
+    const [quantity, setQuantity] = useState(1);
     const [materials, setMaterials] = useState<MaterialOption[]>([]);
     const [category, setCategory] = useState("");
     const [materialId, setMaterialId] = useState("");
@@ -45,7 +46,7 @@ export default function BaseSignForm({ onSubmit }: BaseSignFormProps) {
 
     function handleSubmit() {
         const selected = materials.find((m) => String(m.id) === materialId);
-        onSubmit({ type: "Base", width, height, material: selected?.name ?? "" });
+        onSubmit({ type: "Base", width, height, material: selected?.name ?? "", quantity });
     }
 
     return (
@@ -72,6 +73,8 @@ export default function BaseSignForm({ onSubmit }: BaseSignFormProps) {
                     </select>
                 </label>
             )}
+
+            <label>Quantity <input type="number" min="1" placeholder="1" value={quantity} onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))} /></label>
 
             {loadError && <p className="text-red-600">Couldn't load materials: {loadError}</p>}
             <button type="button" onClick={handleSubmit} disabled={!materialId} className="mt-4 px-4 py-2 rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50">Submit</button>

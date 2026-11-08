@@ -5,6 +5,8 @@ import TotalCostReport from "./components/TotalCostReport.tsx";
 import type { CostItem } from "./components/TotalCostReport.tsx";
 import DefinedSignComponentRecord from "./components/DefinedSignComponentRecord.tsx";
 import type { SignComponentData } from "./types/signComponent";
+import { calculateAllCosts } from "./utils/costCalculations";
+import type { MaterialCost } from "./utils/costCalculations";
 
 interface Material {
     id: number;
@@ -37,10 +39,12 @@ function App() {
         setComponents((prev) => [...prev, data]);
     }
 
-    const costItems: CostItem[] = components.map((comp, i) => ({
-        name: `Component #${i + 1}: ${comp.type}`,
-        cost: 0,
+    const materialCosts: MaterialCost[] = materials.map((m) => ({
+        name: m.name,
+        unitCost: parseFloat(m.unit_cost) || 0,
     }));
+
+    const costItems: CostItem[] = calculateAllCosts(components, materialCosts);
 
     return (
         <div className="min-h-screen bg-white text-black text-right">
@@ -52,7 +56,7 @@ function App() {
                     <div className="mt-8">
                         <h2 className="text-xl font-semibold">Defined Components</h2>
                         {components.map((data, index) => (
-                            <DefinedSignComponentRecord key={index} data={data} index={index} />
+                            <DefinedSignComponentRecord key={index} data={data} index={index} cost={costItems[index]?.cost ?? 0} />
                         ))}
                     </div>
                 )}

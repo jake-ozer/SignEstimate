@@ -9,6 +9,7 @@ export interface BaseSignData {
     width: number;
     height: number;
     material: string;
+    quantity: number;
 }
 
 export interface DimensionalLettersData {
@@ -16,6 +17,7 @@ export interface DimensionalLettersData {
     sentence: string;
     avgHeightPerLetter: number;
     material: string;
+    quantity: number;
 }
 
 export interface VinylPlotData {
@@ -23,6 +25,7 @@ export interface VinylPlotData {
     width: number;
     height: number;
     material: string;
+    quantity: number;
 }
 
 export interface LargeFormatDecalData {
@@ -30,6 +33,7 @@ export interface LargeFormatDecalData {
     width: number;
     height: number;
     material: string;
+    quantity: number;
 }
 
 export type SignComponentData =

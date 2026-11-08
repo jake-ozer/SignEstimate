@@ -3,9 +3,17 @@ import type { SignComponentData } from "../types/signComponent";
 type DefinedSignComponentRecordProps = {
     data: SignComponentData;
     index: number;
+    cost: number;
 };
 
-export default function DefinedSignComponentRecord({ data, index }: DefinedSignComponentRecordProps) {
+function formatCurrency(amount: number) {
+    return amount.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+    });
+}
+
+export default function DefinedSignComponentRecord({ data, index, cost }: DefinedSignComponentRecordProps) {
     const fields: { label: string; value: string | number }[] = [];
 
     switch (data.type) {
@@ -30,6 +38,9 @@ export default function DefinedSignComponentRecord({ data, index }: DefinedSignC
     if (data.material) {
         fields.push({ label: "Material", value: data.material });
     }
+
+    fields.push({ label: "Quantity", value: data.quantity });
+    fields.push({ label: "Cost", value: formatCurrency(cost) });
 
     return (
         <div className="rounded border border-gray-200 p-4 mb-4 w-96 ml-auto">
